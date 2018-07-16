@@ -2,7 +2,7 @@
 文件传输
 
 目录结构：
-![](https://i.imgur.com/OmN24SJ.png)
+![](https://i.imgur.com/bFDrqPE.png)
 
 ## 由于最近在加负载均衡的处理，所以代码有很多没有push更新
 ## 主要职责
