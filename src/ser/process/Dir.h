@@ -11,14 +11,12 @@ public:
 		, _file_name(file_name)
 		, _md5(md5){}
 
-	CFileDirInfo& operator=(const CFileDirInfo &src)
-	{
+	CFileDirInfo& operator=(const CFileDirInfo &src){
 		_is_file = src._is_file;
 		_file_name = src._file_name;
 		return *this;
 	}
-	bool operator==(const CFileDirInfo &src)
-	{
+	bool operator==(const CFileDirInfo &src){
 		return _file_name == src._file_name;
 	}
 	bool operator>(const CFileDirInfo &src)

@@ -27,8 +27,7 @@ typedef struct sockpair_chain sockpiar_t;
 /* 打开的双重管道流的链头. */
 static sockpiar_t *chain_hdr;
 
-FILE *dpopen(const char *command)
-{
+FILE *dpopen(const char *command){
 	int fd[2], parent, child;
 	pid_t   pid;
 	FILE    *stream;
@@ -105,8 +104,7 @@ FILE *dpopen(const char *command)
 	}
 }
 
-int dpclose(FILE *stream)
-{
+int dpclose(FILE *stream){
 	int status;
 	pid_t pid, wait_res;
 	sockpiar_t *cur;
@@ -143,8 +141,7 @@ int dpclose(FILE *stream)
 	return -1;
 }
 
-int dphalfclose(FILE *stream)
-{
+int dphalfclose(FILE *stream){
 	/*确保所有数据都被刷新 */
 	if (fflush(stream) == EOF)
 		return -1;
