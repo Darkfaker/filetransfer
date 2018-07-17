@@ -12,6 +12,11 @@
 ### 项目时间
 2018/5/2 -- 2018/4/4
 
+### 项目展望
+- 目前已经完成基本功能，后期准备加入 mysql, redis以及使用 libevent 编写 socket
+- 成型之后会做成一个 HTTP 文件服务器，会加入中间层 dispatch负载均衡器
+- 负载均衡器的负载策略由 Hash 文件中的一致性哈希实现
+
 ## 目录结构：
 
 ![](https://i.imgur.com/bFDrqPE.png)
