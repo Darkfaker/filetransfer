@@ -14,7 +14,9 @@
 - Dir.h          目录流处理的代码
 - process.cpp    worker事件处理代码
 - FTP.h          处理连接的代码使用半同步半异步进程池
-
+- hash.h 一致性哈希的主代码
+- md5.h md5的主代码
+- md5.cpp md5的实现
 # 主要逻辑图
 用于管理文件与MD5的map表
 
