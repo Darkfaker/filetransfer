@@ -22,7 +22,7 @@
 ![](https://i.imgur.com/bFDrqPE.png)
 
 ## 由于最近在加负载均衡的处理，所以代码有很多没有push更新
-## 负载均衡使用一致性哈希实现
+
 ## 主要职责
 - LinuxFun.h     项目中使用的Linux头文件
 - STL.h		项目中使用的C++ STL的头文件
