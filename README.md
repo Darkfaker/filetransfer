@@ -5,6 +5,8 @@
 - 使用STL容器实现用户表格的管理
 - 使用一致性哈希进行负载的均衡
 - 使用Nginx内存池完成内存的管理
+- 使用 event loop per thread + thread pool 线程池构建调度器框架
+- 使用 JSON 进行数据的封装
 
 ### 项目工具
 - Linux centos7 , vim , gcc, g++, gdb , git
@@ -19,7 +21,7 @@
 
 ## 目录结构：
 
-![](https://i.imgur.com/bFDrqPE.png)
+![](https://i.imgur.com/Pf7Chuq.png)
 
 ## 由于最近在加负载均衡的处理，所以代码有很多没有push更新
 
@@ -35,6 +37,8 @@
 - hash.h 一致性哈希的主代码
 - md5.h md5的主代码
 - md5.cpp md5的实现
+- scheduler 调度器的实现
+- jsoncpp json解析代码
 # 主要逻辑图
 用于管理文件与MD5的map表
 
@@ -42,6 +46,10 @@
 # 用于管理目录的map表
 
 ![](https://i.imgur.com/GFX1lsD.png)
+# 线程池框架图
+![](https://i.imgur.com/xfIKuSq.png)
+
 # 设计最终目标
 
 ![](https://i.imgur.com/WNcWxx9.png)
+
