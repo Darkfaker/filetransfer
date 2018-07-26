@@ -22,6 +22,8 @@
 ## 目录结构：
 
 ![](https://i.imgur.com/Pf7Chuq.png)
+## 代码统计
+![](https://i.imgur.com/GAHk3Ky.png)
 
 ## 由于最近在加负载均衡的处理，所以代码有很多没有push更新
 
