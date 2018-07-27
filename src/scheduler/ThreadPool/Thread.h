@@ -45,8 +45,6 @@ public:
     void startThread();
     /*merge the thread*/
     int joinThread();
-    /*start a thread*/
-    void *runThread(void *msg);
     /*update tid*/
     pid_t updateTid()const{return syscall(SYS_gettid);}
     /*get tid*/
