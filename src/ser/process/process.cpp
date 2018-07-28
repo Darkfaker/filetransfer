@@ -11,30 +11,26 @@ void send_file(int, int, int);
 void recv_file(int, int, int);
 
 const int B_SIZE = 1024;
-//执行进程fork
-class ForkExecv
-{
+//fork control
+class ForkExecv{
 public:
 	ForkExecv(){}
 	~ForkExecv(){}
-	string Fork_pro_comd(string comd)
-	{
+    /*fork sockpair control*/
+	string Fork_pro_comd(string comd){
 		char buff[B_SIZE];
 		string tmpbuff;
 		FILE  *fp;
 		fp = dpopen(comd.c_str());
-		if (fp == NULL)
-		{
+		if (fp == NULL){
 			perror("dpopen error");
 			exit(1);
 		}
-		if (dphalfclose(fp) < 0)
-		{
+		if (dphalfclose(fp) < 0){
 			perror("dphalfclose error");
 			exit(1);
 		}
-		while (1)
-		{
+		while (1){
 			if (fgets(buff, B_SIZE, fp) == NULL)
 				break;
 			tmpbuff += buff;
@@ -45,9 +41,8 @@ public:
 private:
 };
 
-//文件管理类
-class CFile
-{
+//file control class
+class CFile{
 public:
 	typedef list<string> _Mytype;
 	CFile(){}
@@ -57,21 +52,19 @@ public:
 	{
 		_file_list = new _Mytype;
 	}
-	//查询 file
+	// find file
 	bool find_file(const string &file_name)
 	{
 		_Mytype::iterator it = find(_file_list->begin(), _file_list->end(), file_name);
 		return it != _file_list->end();
 	}
-	//插入 file
-	void insert_file(const string &file_name)
-	{
+	// insert file
+	void insert_file(const string &file_name){
 		_file_list->push_front(file_name);
 		++_link_count;
 	}
-	//删除 file
-	void del_file(const string &file_name)
-	{
+	//del file
+	void del_file(const string &file_name){
 		_Mytype::iterator it = find(_file_list->begin(), _file_list->end(), file_name);
 		_file_list->erase(it);
 		--_link_count;
@@ -82,42 +75,35 @@ public:
 	UNLL _link_count;
 };
 
-//MD5 管理类
-class CMd5 : public ForkExecv
-{
+//MD5 control class
+class CMd5 : public ForkExecv{
 public:
 	typedef unordered_map<string, CFile> _Mytype;
-	//单例
+	
 	static CMd5 *GetMd5(){ return &_md5; }
 	~CMd5(){}
-	string make_md5(const string &file_name)
-	{
+	string make_md5(const string &file_name){
 		_comd += file_name;
 		_md5_Str = ForkExecv::Fork_pro_comd(_comd);
 	}
-	//插入 md5
-	void insert_md5(const string &m, const CFile &file)
-	{
+	//insert md5
+	void insert_md5(const string &m, const CFile &file){
 		_Md5_map.insert(make_pair(m, file));
 	}
-	//删除 md5
-	void del_md5(const string &m)
-	{
+	//del md5
+	void del_md5(const string &m){
 		_Md5_map.erase(m);
 	}
-	//查找 md5
-	_Mytype::iterator find_md5(const string &m)
-	{
+	//find md5
+	_Mytype::iterator find_md5(const string &m){
 		return _Md5_map.find(m);
 	}
-	//获得 end
-	_Mytype::iterator get_end()
-	{
+	//get end
+	_Mytype::iterator get_end(){
 		return _Md5_map.end();
 	}
-	//获得头
-	_Mytype::iterator get_begin()
-	{
+	//get begin
+	_Mytype::iterator get_begin(){
 		return _Md5_map.begin();
 	}
 private:
@@ -129,21 +115,19 @@ private:
 };
 CMd5 CMd5::_md5;
 
-//进程任务执行类
-class CProecss : public ForkExecv, public CFile
-{
+/*cli clasa control*/
+class CProecss : public ForkExecv, public CFile{
 public:
 	typedef typename CMd5::_Mytype _MapType;
-	CProecss()
-	{
+	CProecss(){
 		_md5 = CMd5::GetMd5();
 		_Dir = CDir::GetDirMap();
 	}
-	void init(int epollfd, int sockfd, struct sockaddr_in addr)
-	{
+	void init(int epollfd, int sockfd, struct sockaddr_in addr){
 		_sockfd = sockfd;
 	}
 	void process();
+
 	void Put_Ctl(char **myargv);
 
 	void Get_Ctl(char **myargv);
@@ -156,18 +140,18 @@ public:
 
 	void Dir_Add(char **myargv);
 private:
-	string _comd;//命令
-	string _file_name;//文件名
-	int _port_addr;//端口号
-	int _sockfd;//套接字
+	string _comd;//cmd
+	string _file_name;//file 
+	int _port_addr;//addr
+	int _sockfd;
 	CMd5 *_md5;
 	string _md5_str;
 	bool _need_put;
 	CDir *_Dir;
 };
 
-void CProecss::process()
-{
+/*main loop*/
+void CProecss::process(){
 	cout << "run >> " << endl;
 	char *myargv[10];
 	char *comd = new char[128]();
@@ -183,48 +167,37 @@ void CProecss::process()
 	_comd = comd;
 	string path("/bin/");
 	string cmd(myargv[0]);
-	if (cmd == "get")
-	{
+	if (cmd == "get"){
 		Get_Ctl(myargv);
 		return;
 	}
-	else if (cmd == "put")
-	{
+	else if (cmd == "put"){
 		Put_Ctl(myargv);
 		Dir_file_Add(myargv);
 		return;
 	}
-	else if (cmd == "cd")
-	{
+	else if (cmd == "cd"){
 		Dir_Ctl(myargv);
 		return;
 	}
 	else if (cmd == "cp")
-	{
 		return;
-	}
 	else if (cmd == "ls")
-	{
 		Dir_Ctl(myargv);
-	}
 	else if (cmd == "mkdir")
-	{
 		Dir_file_Add(myargv, false);
-	}
-	else
-	{
+	else{
 		string recv_buff = ForkExecv::Fork_pro_comd(_comd);
 		send(_sockfd, recv_buff.c_str(), recv_buff.length(), 0);
 		return;
 	}
 }
 
-inline void CProecss::Put_Ctl(char **myargv)
-{
+/*put file control*/
+inline void CProecss::Put_Ctl(char **myargv){
 	_MapType::iterator it = _md5->find_md5(string(myargv[2]));
 
-	if (it == _md5->get_end())
-	{
+	if (it == _md5->get_end()){
 		int fw = open(myargv[1], O_WRONLY | O_CREAT, 0600);
 		if (fw == -1)
 			return;
@@ -235,27 +208,22 @@ inline void CProecss::Put_Ctl(char **myargv)
 		_md5->insert_md5(string(myargv[2]), file);
 		recv_file(_sockfd, file_size, fw);
 	}
-	else
-	{
+	else{
 		it->second.insert_file(string(myargv[1]));
 		send(_sockfd, "no", 2, 0);
 		cout << "we have this file ......." << endl;
 	}
 }
 
-inline void CProecss::Get_Ctl(char **myargv)
-{
+/*get file control*/
+inline void CProecss::Get_Ctl(char **myargv){
 	_MapType::iterator it = _md5->find_md5(string(myargv[1]));
 	if (it != _md5->get_end())
-	{
 		send(_sockfd, "no file", 7, 0);
-	}
-	else
-	{
+	else{
 		cout << "open file " << endl;
 		int fd = open(myargv[1], O_RDONLY);
-		if (fd == -1)
-		{
+		if (fd == -1){
 			cout << "------have no file!----" << endl;
 			return;
 		}
@@ -269,8 +237,7 @@ inline void CProecss::Get_Ctl(char **myargv)
 	}
 }
 
-int sockfd_init()
-{
+int sockfd_init(){
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	assert(sockfd != -1);
 	struct sockaddr_in saddr;
@@ -286,16 +253,16 @@ int sockfd_init()
 }
 
 typedef unsigned long long UNLL;
-inline void recv_file(int sockfd, int file_size, int fw)
-{
+/*reve file control*/
+inline void recv_file(int sockfd, int file_size, int fw){
 	cout << "-------put file......-------" << endl;
 	cout << "file_size:" << file_size << endl;
 	send(sockfd, "ok", 2, 0);
 	int fin_size(0);
 	int numb(0);
 	char *recv_buff = new char[1024]();
-	while ((numb = recv(sockfd, recv_buff, 1024, 0)) > 0)
-	{
+
+	while ((numb = recv(sockfd, recv_buff, 1024, 0)) > 0){
 		fin_size += numb;
 		write(fw, recv_buff, numb);
 		memset(recv_buff, 0, 1024);
@@ -309,8 +276,8 @@ inline void recv_file(int sockfd, int file_size, int fw)
 	close(fw);
 }
 
-inline void send_file(int sockfd, int fd, int file_size)
-{
+/*send file control*/
+inline void send_file(int sockfd, int fd, int file_size){
 	cout << "send_file......." << endl;
 	char buff[2];
 	recv(sockfd, buff, 2, 0);
@@ -319,23 +286,20 @@ inline void send_file(int sockfd, int fd, int file_size)
 	close(fd);
 }
 
-inline void CProecss::Dir_Ctl(char **myargv)
-{
+/*Dir control loop*/
+inline void CProecss::Dir_Ctl(char **myargv){
 	string w_dir = _Dir->whilch_dir();
 	CDir::_MapType::iterator mapit = _Dir->find_dir(w_dir);
 	string dir(myargv[1]);
-	if (dir == ".")
-	{
+	if (dir == "."){
 		_Dir->change_dir(myargv[1]);
 		_Dir->show_Dir(string(myargv[1]));
 	}
-	else if (dir == "..")
-	{
+	else if (dir == ".."){
 		_Dir->change_dir(mapit->second.get_pre_dir().c_str());
 		_Dir->show_Dir(string(myargv[1]));
 	}
-	else if (dir[0] == (char)"/")
-	{
+	else if (dir[0] == (char)"/"){
 		char *dir[10] = { 0 };
 		char *p = strtok(myargv[1], "/");
 		if (NULL == p)
@@ -346,49 +310,41 @@ inline void CProecss::Dir_Ctl(char **myargv)
 			dir[++i] = p;
 		CFileDir::_ListType::iterator it;
 		CDir::_MapType::iterator it2;
-		for (int j = 0; j < i; ++j)
-		{
+		for (int j = 0; j < i; ++j){
 			it2 = _Dir->find_dir(string(dir[j]));
-			if (it2 == _Dir->get_end())
-			{
+			if (it2 == _Dir->get_end()){
 				string buff("this is a file, not a dir!");
 				cout << buff << endl;
-				//send();
 				return;
 			}
 		}
 		_Dir->change_dir(dir[i - 1]);
 	}
-	else
-	{
+	else{
 		_Dir->change_dir(myargv[1]);
 		_Dir->show_Dir(string(myargv[1]));
 	}
 }
 
-inline void CProecss::Dir_file_Add(char **myargv, bool isfile = true)
-{
+/*dir file add control*/
+inline void CProecss::Dir_file_Add(char **myargv, bool isfile = true){
 	string w_dir = _Dir->whilch_dir();
 	CDir::_MapType::iterator mapit = _Dir->find_dir(w_dir);
 
-	if (mapit == _Dir->get_end())
-	{
+	if (mapit == _Dir->get_end()){
 		cout << "not find this Dir!" << endl;
 		throw "not find this Dir!";
 	}
-	else
-	{
+	else{
 		CFileDirInfo fileinfo(isfile, string(myargv[1]), string(myargv[2]));
 		CFileDir::_ListType::iterator fileit = mapit->second.find_file(fileinfo);
-		if (fileit == mapit->second.get_end())
-		{
+		if (fileit == mapit->second.get_end()){
 			if (isfile)
 				mapit->second.insert_file(fileinfo);
 			else
 				_Dir->insert_dir(string(myargv[1]), CFileDir(w_dir, string(myargv[1])));
 		}
-		else
-		{
+		else{
 			string buff("There is one file have the same name!");
 			cout << buff << endl;
 			//send();
@@ -396,8 +352,7 @@ inline void CProecss::Dir_file_Add(char **myargv, bool isfile = true)
 	}
 }
 
-inline void CProecss::show_ctl(char **myargv, bool isall = false)
-{
+inline void CProecss::show_ctl(char **myargv, bool isall = false){
 	string cmd(myargv[1]);
 
 	_Dir->show_Dir_All();

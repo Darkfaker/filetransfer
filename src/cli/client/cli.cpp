@@ -15,31 +15,27 @@ void put_file(int, int, int);
 void get_file(int, int, int);
 
 const int B_SIZE = 1024;
-//进程 fork
-class ForkExecv
-{
+//fork and iostream
+class ForkExecv{
 public:
 	ForkExecv(){}
 	~ForkExecv(){}
-	string Fork_pro_comd(const string &comd)
-	{
+    /*fork sockpair control*/
+	string Fork_pro_comd(const string &comd){
 		char buff[B_SIZE];
 		string tmpbuff;
 		FILE  *fp;
 		comd;
 		fp = dpopen(comd.c_str());
-		if (fp == NULL)
-		{
+		if (fp == NULL){
 			perror("dpopen error");
 			exit(1);
 		}
-		if (dphalfclose(fp) < 0)
-		{
+		if (dphalfclose(fp) < 0){
 			perror("dphalfclose error");
 			exit(1);
 		}
-		while (1)
-		{
+		while (1){
 			if (fgets(buff, B_SIZE, fp) == NULL)
 				break;
 			tmpbuff += buff;
@@ -49,15 +45,14 @@ public:
 	}
 private:
 };
-//MD5 管理
-class CMd5 : public ForkExecv
-{
+//MD5 Control
+class CMd5 : public ForkExecv{
 public:
 	typedef unordered_multimap<string, string> _Mytype;
 	static CMd5 *GetMd5(){ return &_md5; }
 	~CMd5(){}
-	string make_md5(const string &file_name)
-	{
+    /*make md5*/
+	string make_md5(const string &file_name){
 		string _comd("md5sum");
 		_comd += " ";
 		_comd += file_name;
@@ -74,8 +69,7 @@ public:
 			tmp.push_back(_md5_Str[id]);
 		tmp.erase(tmp.begin());
 		id = file_name.size() + 3;
-		while (id)
-		{
+		while (id){
 			tmp.pop_back();
 			--id;
 		}
@@ -85,24 +79,21 @@ public:
 		cout << "_md5_str: " << tmp << endl;
 		return string(tmp);
 	}
-	void insert_md5(const string &m, const string &file)
-	{
+    /*insert*/
+	void insert_md5(const string &m, const string &file){
 		_Md5_map.insert(make_pair(m, file));
 	}
-	void del_md5(const string &m)
-	{
+    /*del*/
+	void del_md5(const string &m){
 		_Md5_map.erase(m);
 	}
-	_Mytype::iterator find_md5(const string &m)
-	{
+	_Mytype::iterator find_md5(const string &m){
 		return _Md5_map.find(m);
 	}
-	_Mytype::iterator get_end()
-	{
+	_Mytype::iterator get_end(){
 		return _Md5_map.end();
 	}
-	_Mytype::iterator get_begin()
-	{
+	_Mytype::iterator get_begin(){
 		return _Md5_map.begin();
 	}
 private:
@@ -113,12 +104,10 @@ private:
 };
 CMd5 CMd5::_md5;
 
-//cli  逻辑处理
-class Client //:public CFile
-{
+//cli control
+class Client //:public CFile{
 public:
-	Client()
-	{
+	Client(){
 		_sockfd = sockfd_init();
 		_md5 = CMd5::GetMd5();
 		_comd = new char[32]();
@@ -132,10 +121,9 @@ private:
 	CMd5 *_md5;
 	char *_comd;
 };
-void Client::cliRun()
-{
-	while (1)
-	{
+/*Runing*/
+void Client::cliRun(){
+	while (1){
 		cout << "+------------------------------------------+" << endl;
 		cout << "input:" << endl;
 
@@ -151,35 +139,27 @@ void Client::cliRun()
 		int i = 0;
 		while (NULL != (s = strtok(NULL, " ")))
 			myargv[++i] = s;
-		cout << "-----" << endl;
 
 		string cmd(myargv[0]);
-		if (cmd == "end")
-		{
-			cout << "+-------cli close------+" << endl;
+		if (cmd == "end"){
 			close(_sockfd);
 			break;
 		}
-		else if (cmd == "clear")
-		{
-			system("clear");
+		else if (cmd == "clear"){
+            system("pause");
 			close(_sockfd);
 		}
-		else if (cmd == "get")
-		{
+		else if (cmd == "get"){
 			getCtl(myargv);
 		}
-		else if (cmd == "put")
-		{
+		else if (cmd == "put"){
 			putCtl(myargv);
 		}
-		else
-		{
+		else{
 			char buff[2047];
 			send(_sockfd, _comd, strlen(_comd), 0);
 			int num = recv(_sockfd, buff, 2047, 0);
-			if (num <= 0)
-			{
+			if (num <= 0){
 				close(_sockfd);
 				continue;
 			}
@@ -187,8 +167,8 @@ void Client::cliRun()
 		}
 	}
 }
-inline void put_file(int sockfd, int fd, int file_size)
-{
+/*send file*/
+inline void put_file(int sockfd, int fd, int file_size){
 	char buff[2];
 	recv(sockfd, buff, 2, 0);/// recv 1
 	if (strncmp(buff, "no", 2) == 0)
@@ -196,15 +176,14 @@ inline void put_file(int sockfd, int fd, int file_size)
 	sendfile(sockfd, fd, NULL, file_size);
 	close(fd);
 }
-inline void get_file(int sockfd, int file_size, int fd)
-{
+/*get file*/
+inline void get_file(int sockfd, int file_size, int fd){
 	cout << "get file......." << endl;
 	send(sockfd, "ok", 2, 0);// send 1
 	int fin_size(0);
 	int numb(0);
 	char *recv_buff = new char[1024]();
-	while ((numb = recv(sockfd, recv_buff, 1024, 0)) > 0)
-	{
+	while ((numb = recv(sockfd, recv_buff, 1024, 0)) > 0){
 		fin_size += numb;
 		write(fd, recv_buff, numb);
 		memset(recv_buff, 0, 1024);
@@ -213,9 +192,8 @@ inline void get_file(int sockfd, int file_size, int fd)
 	}
 	delete[]recv_buff;
 }
-
-inline void Client::putCtl(char **myargv)
-{
+/*put fil control*/
+inline void Client::putCtl(char **myargv){
 	cout << "putctl:>>" << endl;
 	string cmd(_comd);
 	cmd += " ";
@@ -224,8 +202,7 @@ inline void Client::putCtl(char **myargv)
 	cmd += _md5->make_md5(string(myargv[1]));
 
 	int fd = open(myargv[1], O_RDONLY);
-	if (fd == -1)
-	{
+	if (fd == -1){
 		cout << "------have no file!" << endl;
 		return;
 	}
@@ -240,8 +217,8 @@ inline void Client::putCtl(char **myargv)
 	send(_sockfd, cmd.c_str(), cmd.length(), 0);
 	put_file(_sockfd, fd, size);
 }
-inline void Client::getCtl(char **myargv)
-{
+/*get fil control*/
+inline void Client::getCtl(char **myargv){
 	string cmd(myargv[0]);
 	cmd += " ";
 	cmd += myargv[1];
@@ -251,13 +228,11 @@ inline void Client::getCtl(char **myargv)
 	char buff[32] = { 0 };
 	recv(_sockfd, buff, 32, 0);
 	cout << "buff :" << buff << endl;
-	if (strncmp(buff, "no file", 7) == 0)
-	{
+	if (strncmp(buff, "no file", 7) == 0){
 		cout << "this file is not exist!" << endl;
 		return;
 	}
-	else
-	{
+	else{
 		int size(0);
 		sscanf(buff, "%d", &size);
 		cout << "file_size: " << size << endl;
@@ -269,8 +244,7 @@ inline void Client::getCtl(char **myargv)
 }
 
 
-int sockfd_init()
-{
+int sockfd_init(){
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	assert(sockfd != -1);
 
