@@ -33,8 +33,9 @@ void Control_Http::make_Respons(){
 		((_ip_Item_buf->http_line)->request_method).reserve(16);
 		((_ip_Item_buf->http_line)->request_method) 
 			= _data_buff.substr(0, index);
-		index = _data_buff.find(" ", index);
-		if (index == _data_buff.npos) 
+        
+        index = _data_buff.find(" ", index);
+        if (index == _data_buff.npos) 
 			throw "http format error\n";
 		size_t index_end = _data_buff.length() - 1;
 		if (index_end == _data_buff.npos)
@@ -51,7 +52,8 @@ void Control_Http::make_Respons(){
 		((_ip_Item_buf->http_head->http_line_info).request_method).reserve(16);
 		((_ip_Item_buf->http_line)->request_method)
 			= _data_buff.substr(0, index);
-		index = _data_buff.find(" ", index);
+		
+        index = _data_buff.find(" ", index);
 		if (index == _data_buff.npos)
 			throw "http format error\n";
 		size_t index_end = _data_buff.find("\r\n", index);
@@ -68,7 +70,8 @@ void Control_Http::make_Respons(){
 		(_ip_Item_buf->http_head)->accept_langeuage.reserve(16);
 		(_ip_Item_buf->http_head)->accept_langeuage 
 			= _data_buff.substr(index, index_end - index);
-		index = index_end;
+		
+        index = index_end;
 		index_end = _data_buff.find("\r\n", index_end);
 		if (index_end == _data_buff.npos)
 			throw "http format error\n";
