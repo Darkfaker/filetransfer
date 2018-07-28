@@ -2,6 +2,7 @@
 #define _ALLOCATOR_H
 
 #include "../NginxPool/Nginx.h"
+#include "head.h"
 
 /*Define the default memory management method*/
 template<typename T, typename Ngx = NgxMemPool>

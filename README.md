@@ -1,11 +1,11 @@
 # filetransfer
 ## 文件传输
 ### 项目概览
+- 使用 event loop per thread + thread pool 线程池构建调度器框架
 - 使用半同步半异步进程池构建框架
 - 使用STL容器实现用户表格的管理
 - 使用一致性哈希进行负载的均衡
-- 使用Nginx内存池完成内存的管理
-- 使用 event loop per thread + thread pool 线程池构建调度器框架
+- 使用Nginx内存池完成HTTP请求的内存的管理
 - 使用 JSON 进行数据的封装
 
 ### 项目工具
@@ -21,7 +21,7 @@
 
 ## 目录结构：
 
-![](https://i.imgur.com/Pf7Chuq.png)
+![](https://i.imgur.com/C9XcCXS.png)
 ## 代码统计
 ![](https://i.imgur.com/GAHk3Ky.png)
 
@@ -29,6 +29,7 @@
 
 ## 主要职责
 - LinuxFun.h     项目中使用的Linux头文件
+- http_control.cpp HTTP 请求的处理
 - STL.h		项目中使用的C++ STL的头文件
 - cli.cpp        客户端的逻辑代码
 - ser.cpp        服务端的逻辑代码
