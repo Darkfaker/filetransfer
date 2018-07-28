@@ -11,8 +11,10 @@
 #include "head.h"
 #include "myallocator.h"
 using namespace std;
+
 typedef unsigned long long UN_LONG;
 UN_LONG const MAX_FILE_SIZE = 1024 * 1024 * 4;
+
 /*struct HTTP line*/
 typedef struct ipItem_line_s{
 	uchar *line_pos;/*the pos of line in pool*/
@@ -22,6 +24,8 @@ typedef struct ipItem_line_s{
 	string protocol_version;/*the protocal version of cli(ipv4/ipv6)*/
 }ipItem_line_s;
 typedef ipItem_line_s ipItem_line_t;
+
+
 /*struct file*/
 typedef struct file_info_s{
 	int file_fd;/*file fd*/
@@ -30,6 +34,8 @@ typedef struct file_info_s{
 	UN_LONG file_end;/*the end of file in Disk*/
 }file_info_s;
 typedef file_info_s file_info_t;
+
+
 /*struct HTTP head*/
 typedef struct ipItem_head_s{
 	ipItem_line_s http_line_info;/*struct HTTP line*/
@@ -38,6 +44,8 @@ typedef struct ipItem_head_s{
 	file_info_t file_information;/*struct file*/
 }ipItem_head_s;
 typedef ipItem_head_s ipItem_head_t;
+
+
 /*struct ip Item*/
 typedef union ipItem_s{
 	/*request line*/
@@ -47,12 +55,14 @@ typedef union ipItem_s{
 }ipItem_s;
 typedef ipItem_s ipItem_t;
 
+
 /*class HTTP Control*/
 class Control_Http{
 public:
 #define needLine true
 #define needHead false
-	typedef myallocator<ipItem_t> _Pool_Type;
+	
+    typedef myallocator<ipItem_t> _Pool_Type;
 private:
 	ipItem_t *_ip_Item_buf;
 	UN_LONG _max_file_size;
