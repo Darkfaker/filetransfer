@@ -4,15 +4,14 @@
 - 使用 event loop per thread + thread pool 线程池构建调度器框架
 - 使用半同步半异步进程池构建框架
 - 使用STL容器实现用户表格的管理
-- 使用一致性哈希进行负载的均衡
+- 使用一致性哈希策略进行负载的均衡
 - 使用Nginx内存池完成HTTP请求的内存的管理
-- 使用 JSON 进行数据的封装
 
 ### 项目工具
 - Linux centos7 , vim , gcc, g++, gdb , git
 
 ### 项目时间
-2018/5/2 -- 2018/4/4
+2018/4/2 -- 2018/5/4
 
 ### 项目展望
 - 目前已经完成基本功能，后期准备加入 mysql, redis以及使用 libevent 编写 socket
